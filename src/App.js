@@ -6,13 +6,22 @@ class App extends Component {
         super(props);
 
         this.state = {
-            counter: 0
+            counter: 0,
+            displayError: false
         };
     }
 
     incrementCounter = () => {
         this.setState({
-            counter: this.state.counter + 1
+            counter: this.state.counter + 1,
+            displayError: this.state.counter + 1 <= 0
+        });
+    }
+
+    decrementCounter = () => {
+        this.setState({
+            counter: this.state.counter > 0 ? this.state.counter - 1 : 0,
+            displayError: this.state.counter <= 0
         });
     }
 
@@ -25,6 +34,12 @@ class App extends Component {
                     onClick={this.incrementCounter}>
                     Increment counter
                 </button>
+                <button 
+                    data-test="decrement-button" 
+                    onClick={this.decrementCounter}>
+                    Decrement counter
+                </button>
+                <span className="error" style={{display: this.state.displayError ? 'inline' : 'none'}}>the counter can't go below zero</span>
             </div>
         );
     }

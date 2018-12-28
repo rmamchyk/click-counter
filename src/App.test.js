@@ -27,6 +27,12 @@ it('renders increment button', () => {
     expect(button.length).toBe(1); 
 });
 
+it('renders decrement button', () => {
+    const wrapper = setup();
+    const button = findByTestAttr(wrapper, 'decrement-button');
+    expect(button.length).toBe(1); 
+});
+
 it('renders counter display', () => {
     const wrapper = setup();
     const counterDisplay = findByTestAttr(wrapper, 'counter-display');
@@ -39,16 +45,69 @@ it('counter starts at zero', () => {
     expect(initialState).toBe(0);
 });
 
-it('clicking button increments counter display', () => {
+describe('when click increment button', () => {
     const counter  = 7;
     const wrapper = setup(null, {counter});
 
     // find button and click
     const button = findByTestAttr(wrapper, 'increment-button');
     button.simulate('click');
-    wrapper.update();
 
-    // find display and test value
-    const counterDisplay = findByTestAttr(wrapper, 'counter-display');
-    expect(counterDisplay.text()).toContain(counter + 1);
+    it('shoud increment counter display by 1', () => {
+        // find display and test value
+        const counterDisplay = findByTestAttr(wrapper, 'counter-display');
+        expect(counterDisplay.text()).toContain(counter + 1);
+    });
+
+    it('should not display error', () => {
+        expect(wrapper.find('.error').prop('style')).toHaveProperty('display', 'none');
+    });
+});
+
+describe('when click decrement button', () => {
+    const counter = 12;
+    const wrapper = setup(null, {counter});
+
+    // find button and click
+    const button = findByTestAttr(wrapper, 'decrement-button');
+    button.simulate('click');
+
+    it('should decrement counter display', () => {
+        // find counter display and verify
+        const counterDisplay = findByTestAttr(wrapper, 'counter-display');
+        expect(counterDisplay.text()).toContain(counter - 1);
+    });
+
+    it('should not display error', () => {
+        expect(wrapper.find('.error').prop('style')).toHaveProperty('display', 'none');
+    });
+});
+
+describe('when initial counter is zero', () => {
+    const counter = 0;
+    const wrapper = setup(null, {counter});
+
+    it('should not display error', () => {
+        expect(wrapper.find('.error').prop('style')).toHaveProperty('display', 'inline');
+    });
+
+    describe('and user clicks decrement button', () => {
+        // find decrement button and click
+        const button = findByTestAttr(wrapper, 'decrement-button');
+        button.simulate('click');
+
+        it('should not decrement counter below zero', () => {
+            // verify counter display is still zero
+            const counterDisplay = findByTestAttr(wrapper, 'counter-display');
+            expect(counterDisplay.text()).toContain(0);
+        
+            //verify error message is shown 
+            const errorMsg = wrapper.find('span.error');
+            expect(errorMsg.text()).toBe("the counter can't go below zero");
+        });
+
+        it('should display error', () => {
+            expect(wrapper.find('.error').prop('style')).toHaveProperty('display', 'inline');
+        });
+    });
 });
